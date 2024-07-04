@@ -55,6 +55,7 @@ def isCodable(title, abstract):
 
     response = model.generate_content(question)
     try:
+        print("Genimi 回覆：")
         print(json.dumps(json.loads(response.text), indent=4, ensure_ascii=False))
         return json.loads(response.text)
     except Exception as e:
