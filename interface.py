@@ -24,13 +24,10 @@ def generate_backtest_code(field, stragety):
 
 def handle_choice(choice):
     if choice == "更新資料庫":
-        op_code = 1
         return gr.update(visible=True), gr.update(visible=False), gr.update(visible=False)
     elif choice == "產生交易策略":
-        op_code = 2
         return gr.update(visible=False), gr.update(visible=True), gr.update(visible=False)
     elif choice == "產生回測程式碼":
-        op_code = 3
         return gr.update(visible=False), gr.update(visible=False), gr.update(visible=True)
     else:
         return gr.update(visible=False), gr.update(visible=False), gr.update(visible=False)
