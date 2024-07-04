@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import shutil
-import PyPDF2
 import sqlite3
 import google.generativeai as genai
 import os
@@ -175,4 +174,9 @@ def catch_paper(num):
         else:
             print("Failed to fetch the webpage.")
 
-    return
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM paper")
+    total_rows = cursor.fetchone()[0]
+    conn.close()
+    return total_rows

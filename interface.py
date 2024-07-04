@@ -5,9 +5,9 @@ from code_generator import code_generator
 
 
 def update_database(paper_num):
-    catch_paper(paper_num)
+    total = catch_paper(paper_num)
     gr.Info(f"Update Database Success! You added {paper_num} papers into the databases.")
-    return "Finish!"
+    return f"完成！資料庫中有{total}篇論文。"
 
 def generate_trading_strategy(field, paper_num):
     # output = alpha_generator
@@ -80,4 +80,4 @@ if __name__ == '__main__':
             backtest_btn.click(generate_backtest_code, inputs=[field, stragety], outputs=backtest_output)
             backtest_clear.click(lambda: "", None, stragety)
 
-    demo.launch(debug=True)
+    demo.launch(debug=True, share=True)
