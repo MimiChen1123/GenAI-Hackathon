@@ -6,8 +6,8 @@ import time
 import random
 
 
-def alpha_generator(field):
-    paper_num = 5
+def alpha_generator(field, paper_num):
+    ret = ""
     papers = paper_selector('papers.db', field, paper_num)
     time.sleep(1)
     genai.configure(api_key=os.environ["API_KEY"])
@@ -17,15 +17,16 @@ def alpha_generator(field):
     question = f"你是一個專業的alpha researcher，現在有一個客戶希望生成關於{field}的交易策略。\n"
     question += f"你現在手邊有{paper_num}篇論文\n"
     for n in range(paper_num):
-        print(f'我參考的第{n+1}篇論文為{papers[n][0]}')
+        ret += f'我參考的第{n+1}篇論文為：{papers[n][0]}\n'
         question += f"第{n+1}篇論文的題目為{papers[n][0]}，內容如下：\n"
         question += extract_text_from_pdf(papers[n][2])
         question += "\n"
     question += "根據以上論文內容，請詳述你生成的交易策略，並說明哪個想法是受到哪篇論文的啟發。\n"
 
     response = model.generate_content(question)
-    alpha = response.text
-    return alpha
+    ret += "\n"
+    ret += response.text
+    return ret
 
 
 def paper_selector(db, field, paper_num):

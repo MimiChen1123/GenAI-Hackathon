@@ -27,16 +27,6 @@ def clean_abstract(abstract):
     return cleaned_abstract
 
 
-def extract_text_from_pdf(pdf_path):
-    pdf_reader = PyPDF2.PdfReader(pdf_path)
-    num_pages = len(pdf_reader.pages)
-    text = ""
-    for page_num in range(num_pages):
-        page = pdf_reader.pages[page_num]
-        text += page.extract_text()
-    return text
-
-
 def isCodable(title, abstract):
     time.sleep(1)
     genai.configure(api_key=os.environ["API_KEY"])
@@ -170,8 +160,8 @@ def catch_paper(num):
                         # print("論文內容：", content)
                         info = isCodable(title, abstract)
                         if info['trading_strategy_ralated'] and info['codable']:
-                            num -= 1
                             add_sqlite3(db, title, abstract, pdf_filename, info['trading_strategy_ralated'], info['application_field'], info['trading_strategy'], info['codable'])
+                    num -= 1
 
                     if num == 0:
                         done = 1
