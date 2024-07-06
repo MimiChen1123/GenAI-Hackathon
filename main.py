@@ -33,7 +33,9 @@ while not stop:
         print('=' * terminal_width)
         print('請輸入想要應用的場域（例如：美股、加密貨幣等）')
         field = input("> ")
-        alpha = alpha_generator(field)
+        print('請輸入想使用的論文篇數')
+        paper_num = int(input("> "))
+        alpha = alpha_generator(field, paper_num)
         print(alpha)
 
     elif op == 3:
