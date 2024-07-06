@@ -99,6 +99,8 @@ def is_exist_sqlite3(db, title):
 def catch_paper(num):
     size = 50
     directory = './papers/'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
     headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.138 Safari/537.36'
     }
