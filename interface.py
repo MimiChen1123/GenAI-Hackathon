@@ -5,9 +5,9 @@ from code_generator import code_generator
 
 
 def update_database(paper_num):
-    total = catch_paper(paper_num)
+    output = catch_paper(paper_num)
     gr.Info(f"Update Database Success! You added {paper_num} papers into the databases.")
-    return f"完成！資料庫中有{total}篇論文。"
+    return output
 
 def generate_trading_strategy(field, paper_num):
     # output = alpha_generator
@@ -15,9 +15,9 @@ def generate_trading_strategy(field, paper_num):
     gr.Info("Trading Strategy Is Generated!")
     return output
 
-def generate_backtest_code(field, stragety):
+def generate_backtest_code(field, strategy):
     # output = code_generator
-    output = code_generator(field, stragety)
+    output = code_generator(field, strategy)
     gr.Info("Backtest Code Is Generated!")
     return output
 
@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
             status_output = gr.Textbox("", label="Status")
             database_btn.click(update_database, inputs=paper_num, outputs=status_output)
-            database_clear.click(lambda: 5, None, paper_num)
+            database_clear.click(lambda: [5, ""], None, [paper_num, status_output])
 
         with generate_group:
             field = gr.Textbox(lines=1, visible=True, value="美股", label="Choose an application field. Then it will generate a trading strategy: ")
@@ -67,17 +67,17 @@ if __name__ == '__main__':
             # strategy_output = gr.Textbox(label="Trading Strategy", lines=2, interactive=True, show_copy_button=True)
             strategy_output = gr.Markdown("", line_breaks=True, label="Trading Strategy: ")
             field_btn.click(generate_trading_strategy, inputs=[field, paper_num], outputs=strategy_output)
-            field_clear.click(lambda: "", None, field)
+            field_clear.click(lambda: ["", 3, ""], None, [field, paper_num, strategy_output])
 
         with backtest_group:
             field = gr.Textbox(lines=1, visible=True, value="美股", label="Choose your application field: ")
-            stragety = gr.Text(label="Enter yout trading stragety. Then it will generate a backtest code.", value="只要5MA大於今天的股價就買入")
+            strategy = gr.Text(label="Enter yout trading strategy. Then it will generate a backtest code.", value="只要5MA大於今天的股價就買入")
             with gr.Row():
                 backtest_btn = gr.Button("Submit")
                 backtest_clear = gr.Button("Clear")
             # backtest_output = gr.Textbox(label="Backtest Code")
             backtest_output = gr.Markdown("", line_breaks=True, label="Backtest Code")
-            backtest_btn.click(generate_backtest_code, inputs=[field, stragety], outputs=backtest_output)
-            backtest_clear.click(lambda: "", None, stragety)
+            backtest_btn.click(generate_backtest_code, inputs=[field, strategy], outputs=backtest_output)
+            backtest_clear.click(lambda: ["", "", ""], None, [field, strategy, backtest_output])
 
-    demo.launch(debug=True, share=True)
+    demo.launch(debug=True, server_name='140.112.30.188', server_port=14828)

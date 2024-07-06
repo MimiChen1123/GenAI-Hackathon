@@ -40,15 +40,17 @@ def isCodable(title, abstract):
     question += "簡述其交易策略？（請用中文回答）\n"
     question += "如果要將其交易策略寫成一份python code的話，是否能透過單純的歷史價量做回測？（回答1或0即可，1表示可以，0表示不行）\n"
     question += "請用json格式回覆，範例如下：\n"
-    question += "{'trading_strategy_ralated': 1, 'application_field': '美股', 'trading_strategy': ['1', '2', ...], 'codable': 1}\n"
+    question += "{'trading_strategy_related': 1, 'application_field': '美股', 'trading_strategy': ['1', '2', ...], 'codable': 1}\n"
 
     response = model.generate_content(question)
     try:
-        print("Genimi 回覆：")
-        print(json.dumps(json.loads(response.text), indent=4, ensure_ascii=False))
-        return json.loads(response.text)
+        d = json.loads(response.text)
+        keys_to_check = ['trading_strategy_related', 'application_field', 'trading_strategy']
+        keys_exist = [key in d for key in keys_to_check]
+        if not all(keys_exist):
+            d = isCodable(title, abstract)
+        return d
     except Exception as e:
-        print(f"發生異常：{e}")
         return isCodable(title, abstract)
 
 
@@ -107,6 +109,8 @@ def catch_paper(num):
     db = 'papers.db'
     init_sqlite3(db)
 
+    ret = ""
+
     while not done:
         url = f'https://arxiv.org/search/advanced?advanced=&terms-0-operator=AND&terms-0-term=&terms-0-field=all&classification-physics_archives=all&classification-q_finance=y&classification-include_cross_list=include&date-filter_by=all_dates&date-year=&date-from_date=&date-to_date=&date-date_type=submitted_date&abstracts=show&size={size}&order=-announced_date_first&start={start_index}'
 
@@ -119,9 +123,10 @@ def catch_paper(num):
                 for a_tag in a_tags:
                     pdf_url = a_tag['href']
                     pdf_availiable = 1
+                    is_download = 0
                     if 'https://arxiv.org/pdf/' not in pdf_url:
                         continue
-                    print(f'論文連結：{pdf_url}', end=' ')
+                    ret += f'論文連結：{pdf_url}'
 
                     next_p_tag = a_tag.find_next('p', class_='title is-5 mathjax')
                     if next_p_tag:
@@ -130,53 +135,74 @@ def catch_paper(num):
 
                         pdf_filename = f'{directory}{title}.pdf'
                         if os.path.exists(pdf_filename):
-                            print('（已經下載過囉）')
+                            ret += '（已經下載過囉）\n'
+                            is_download = 1
                         else:
                             pdf_response = requests.get(pdf_url)
                             if pdf_response.status_code == 200:
                                 with open(pdf_filename, 'wb') as pdf_file:
                                     pdf_file.write(pdf_response.content)
-                                print('(下載成功！)')
+                                ret += '(下載成功！)\n'
                             else:
                                 pdf_availiable = 0
-                                print('(找不到PDF檔QAQ)')
+                                ret += '(找不到PDF檔QAQ)\n'
 
-                        print(f'論文標題：{title}')
+                        ret += f'論文標題：{title}\n'
 
                     else:
-                        print("找不到標題QAQ")
+                        ret += "找不到標題QAQ\n"
 
                     next_span_tag = a_tag.find_next('span', class_='abstract-full has-text-grey-dark mathjax')
                     if next_span_tag:
                         abstract = next_span_tag.get_text()
                         abstract = clean_abstract(abstract)
-                        print("論文摘要：", abstract)
                     else:
-                        print("找不到摘要QAQ")
+                        ret += "找不到摘要QAQ\n"
+                    
+                    if is_download:
+                        pass
 
-                    if pdf_availiable and not is_exist_sqlite3(db, title):
-                        # content = extract_text_from_pdf(pdf_filename)
-                        # print("論文內容：", content)
+                    elif pdf_availiable and not is_exist_sqlite3(db, title):
                         info = isCodable(title, abstract)
-                        if info['trading_strategy_ralated'] and info['codable']:
-                            add_sqlite3(db, title, abstract, pdf_filename, info['trading_strategy_ralated'], info['application_field'], info['trading_strategy'], info['codable'])
-                    num -= 1
+                        ret += f"應用領域：{info['application_field']}\n"
+
+                        ret += "是否和交易策略有關："
+                        if info['trading_strategy_related']:
+                            ret += "是\n"
+                        else:
+                            ret += "否\n"
+                        ret += "是否方便用python進行回測："
+                        if info['codable']:
+                            ret += "是\n"
+                        else:
+                            ret += "否\n"
+                        
+                        if info['trading_strategy_related'] and info['codable']:
+                            add_sqlite3(db, title, abstract, pdf_filename, info['trading_strategy_related'], info['application_field'], info['trading_strategy'], info['codable'])
+                            ret += "已加入資料庫\n"
+                        else:
+                            ret += "不加入資料庫\n"
+
+                        num -= 1
 
                     if num == 0:
                         done = 1
                         break
 
-                    print('=' * terminal_width)
+                    ret += '=' * terminal_width
+                    ret += "\n"
 
             else:
-                print("No matching <a> tag found.")
+                ret += "No matching <a> tag found."
             start_index += size
         else:
-            print("Failed to fetch the webpage.")
+            ret += "Failed to fetch the webpage."
 
     conn = sqlite3.connect(db)
     cursor = conn.cursor()
     cursor.execute("SELECT COUNT(*) FROM paper")
     total_rows = cursor.fetchone()[0]
     conn.close()
-    return total_rows
+
+    ret += f"\n更新完成，資料庫共有{total_rows}篇論文\n"
+    return ret
