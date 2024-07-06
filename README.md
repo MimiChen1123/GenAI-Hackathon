@@ -25,7 +25,7 @@ python3 interface.py
 ```
 Once it is running, the terminal will display a URL. The user only needs to copy this URL into a browser to start using the user interface we have set up. For instructions on how to operate the user interface, please refer to the video at the following URL.
 ```
-
+https://www.youtube.com/watch?v=x7ZD3ICB4Tk
 ```
 ### Run on terminal
 Please have the user enter the following command.
