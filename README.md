@@ -12,6 +12,10 @@ Next, some essential libraries need to be downloaded. We have prepared the requi
 ```
 pip install -r requirements.txt
 ```
+Then, you need create a directory to save our papers.
+```
+mkdir papers
+```
 Finally, we offer the user two ways to utilize our automated trading strategy generator, allowing them to choose the method that best suits their needs.
 
 ### User Interface
