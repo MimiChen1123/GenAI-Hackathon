@@ -1,10 +1,10 @@
 # GenAI-Hackathon (自動交易策略生成器)
 ## How to start
-首先先將程式碼下載制使用者的本機端。
+First, download the code to the user's local machine.
 ```
-git clone
+git clone https://github.com/MimiChen1123/GenAI-Hackathon.git
 ```
-下載完後，接著進入程式碼所放置的資料夾
+After downloading, navigate to the folder where the code is stored.
 ```
 cd GenAI-Hackathon
 ```
