@@ -128,7 +128,6 @@ def catch_paper(num):
                     is_download = 0
                     if 'https://arxiv.org/pdf/' not in pdf_url:
                         continue
-                    ret += f'論文連結：{pdf_url}'
 
                     next_p_tag = a_tag.find_next('p', class_='title is-5 mathjax')
                     if next_p_tag:
@@ -137,19 +136,16 @@ def catch_paper(num):
 
                         pdf_filename = f'{directory}{title}.pdf'
                         if os.path.exists(pdf_filename):
-                            ret += '（已經下載過囉）\n'
                             is_download = 1
                         else:
                             pdf_response = requests.get(pdf_url)
                             if pdf_response.status_code == 200:
                                 with open(pdf_filename, 'wb') as pdf_file:
                                     pdf_file.write(pdf_response.content)
-                                ret += '(下載成功！)\n'
+                                ret += f'論文連結：{pdf_url}(下載成功！)\n'
                             else:
                                 pdf_availiable = 0
                                 ret += '(找不到PDF檔QAQ)\n'
-
-                        ret += f'論文標題：{title}\n'
 
                     else:
                         ret += "找不到標題QAQ\n"
@@ -166,6 +162,7 @@ def catch_paper(num):
 
                     elif pdf_availiable and not is_exist_sqlite3(db, title):
                         info = isCodable(title, abstract)
+                        ret += f'論文標題：{title}\n'
                         ret += f"應用領域：{info['application_field']}\n"
 
                         ret += "是否和交易策略有關："
@@ -187,12 +184,13 @@ def catch_paper(num):
 
                         num -= 1
 
+                        ret += '=' * terminal_width
+                        ret += "\n"
+
                     if num == 0:
                         done = 1
                         break
 
-                    ret += '=' * terminal_width
-                    ret += "\n"
 
             else:
                 ret += "No matching <a> tag found."
