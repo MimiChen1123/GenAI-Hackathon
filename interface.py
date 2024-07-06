@@ -67,7 +67,7 @@ if __name__ == '__main__':
             # strategy_output = gr.Textbox(label="Trading Strategy", lines=2, interactive=True, show_copy_button=True)
             strategy_output = gr.Markdown("", line_breaks=True, label="Trading Strategy: ")
             field_btn.click(generate_trading_strategy, inputs=[field, paper_num], outputs=strategy_output)
-            field_clear.click(lambda: ["", 3, ""], None, [field, paper_num, strategy_output])
+            field_clear.click(lambda: ["美股", 3, ""], None, [field, paper_num, strategy_output])
 
         with backtest_group:
             field = gr.Textbox(lines=1, visible=True, value="美股", label="Choose your application field: ")
@@ -78,6 +78,6 @@ if __name__ == '__main__':
             # backtest_output = gr.Textbox(label="Backtest Code")
             backtest_output = gr.Markdown("", line_breaks=True, label="Backtest Code")
             backtest_btn.click(generate_backtest_code, inputs=[field, strategy], outputs=backtest_output)
-            backtest_clear.click(lambda: ["", "", ""], None, [field, strategy, backtest_output])
+            backtest_clear.click(lambda: ["美股", "只要5MA大於今天的股價就買入", ""], None, [field, strategy, backtest_output])
 
     demo.launch(debug=True, server_name='140.112.30.188', server_port=14828)
