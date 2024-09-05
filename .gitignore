@@ -1,3 +1,4 @@
 papers/*
 papers.db
 __pycache__/
+*_strategy.py

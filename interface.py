@@ -80,4 +80,5 @@ if __name__ == '__main__':
             backtest_btn.click(generate_backtest_code, inputs=[field, strategy], outputs=backtest_output)
             backtest_clear.click(lambda: ["美股", "只要5MA大於今天的股價就買入", ""], None, [field, strategy, backtest_output])
 
-    demo.launch(debug=True, server_name='140.112.30.188', server_port=14828)
+    # demo.launch(debug=True, server_name='140.112.30.188', server_port=14828)
+    demo.launch(debug=True, server_port=14828)
